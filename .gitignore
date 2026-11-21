@@ -1,0 +1,4 @@
+
+# Build scratch & reference downloads (site assets are already optimised in assets/)
+.work/
+image-search/
