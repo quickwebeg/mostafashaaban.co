@@ -61,15 +61,18 @@
   const megaItem = $(".nav__item.has-mega");
   if (megaItem) {
     const trigger = $(".nav__link", megaItem);
+    const siteHeaderEl = $(".site-header");
     let closeTimer;
 
     const open = () => {
       clearTimeout(closeTimer);
       megaItem.classList.add("is-open");
+      if (siteHeaderEl) siteHeaderEl.classList.add("is-mega-open");
       trigger.setAttribute("aria-expanded", "true");
     };
     const close = () => {
       megaItem.classList.remove("is-open");
+      if (siteHeaderEl) siteHeaderEl.classList.remove("is-mega-open");
       trigger.setAttribute("aria-expanded", "false");
     };
     megaItem.addEventListener("mouseenter", () => {
@@ -363,6 +366,7 @@
   /* ------------------------------------------------------- Drag scroller */
   $$(".scroller").forEach((sc) => {
     let down = false, startX = 0, startLeft = 0, moved = 0;
+    sc.addEventListener("dragstart", (e) => e.preventDefault());
     sc.addEventListener("pointerdown", (e) => {
       if (e.pointerType !== "mouse") return;
       down = true;
@@ -370,6 +374,7 @@
       startX = e.clientX;
       startLeft = sc.scrollLeft;
       sc.classList.add("is-dragging");
+      try { sc.setPointerCapture(e.pointerId); } catch (err) {}
     });
     sc.addEventListener("pointermove", (e) => {
       if (!down) return;
@@ -377,9 +382,11 @@
       moved = Math.abs(dx);
       sc.scrollLeft = startLeft - dx;
     });
-    const end = () => {
+    const end = (e) => {
+      if (!down) return;
       down = false;
       sc.classList.remove("is-dragging");
+      try { sc.releasePointerCapture(e.pointerId); } catch (err) {}
     };
     sc.addEventListener("pointerup", end);
     sc.addEventListener("pointerleave", end);

@@ -304,9 +304,9 @@
     { image: "assets/img/gallery/villa-sharq.jpg", title: "Villa Sharq", place: "New Cairo", category: "Living" },
     { image: "assets/img/gallery/walnut-salon.jpg", title: "Walnut Salon", place: "Garden City", category: "Living" },
     { image: "assets/img/gallery/downtown-loft.jpg", title: "Downtown Loft", place: "Alexandria", category: "Studio" },
-    { image: "assets/img/gallery/souk-house.jpg", title: "Souk House", place: "Tanta, Gharbia", category: "Living" },
+    { image: "assets/img/gallery/souk-house.jpg", title: "Souk House", place: "Maadi, Cairo", category: "Living" },
     { image: "assets/img/gallery/palm-courtyard.jpg", title: "Palm Courtyard", place: "El Gouna", category: "Living" },
-    { image: "assets/img/gallery/farmhouse-dining.jpg", title: "Farmhouse Dining", place: "Gharbia Countryside", category: "Dining" },
+    { image: "assets/img/gallery/farmhouse-dining.jpg", title: "Farmhouse Dining", place: "Fayoum", category: "Dining" },
     { image: "assets/img/gallery/marble-apartment.jpg", title: "Marble Apartment", place: "Heliopolis", category: "Living" },
     { image: "assets/img/gallery/linen-bedroom.jpg", title: "Linen Bedroom", place: "Maadi", category: "Bedroom" },
     { image: "assets/img/gallery/stone-bedroom.jpg", title: "Stone Bedroom", place: "New Zayed", category: "Bedroom" },
@@ -317,8 +317,8 @@
     { title: "Home", meta: "Page", url: "index.html", icon: "home" },
     { title: "Products — The Collection", meta: "Page", url: "products.html", icon: "grid" },
     { title: "Gallery — Rooms we have furnished", meta: "Page", url: "gallery.html", icon: "image" },
-    { title: "Our Story — Since 1998", meta: "Page", url: "story.html", icon: "book" },
-    { title: "Contact Us — Showroom in Tanta", meta: "Page", url: "contact.html", icon: "mail" },
+    { title: "About — Since 1998", meta: "Page", url: "story.html", icon: "book" },
+    { title: "Contact Us — Showroom in Cairo", meta: "Page", url: "contact.html", icon: "mail" },
   ];
 
   const testimonials = [

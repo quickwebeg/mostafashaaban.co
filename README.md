@@ -1,6 +1,6 @@
 # mostafashaaban.co
 
-A hand-built static site for **Mostafa Shaaban — Furniture Atelier** (mostafashaaban.co), Tanta, Egypt.
+A hand-built static site for **Mostafa Shaaban — Design House** (mostafashaaban.co), Maadi, Cairo, Egypt.
 
 ## Run locally
 
@@ -13,7 +13,7 @@ Then open <http://localhost:8000>.
 ## Structure
 
 ```
-index.html            Home — opening sequence, hero, collections, styles, pieces
+index.html            Home — opening sequence, hero, category slider, styles, pieces
 products.html         The collection — style filters, live search, sorting, quick view
 gallery.html          Selected rooms — filters + lightbox
 story.html            Our story — timeline, values, atelier
@@ -25,8 +25,8 @@ assets/js/catalog.js  Filtering, sorting, deep links for the collection page
 assets/img/           Art direction — hero, style collections, products, editorial
 ```
 
-No build step, no dependencies. Fonts are loaded from Google Fonts with local
-serif/sans fallbacks.
+No build step, no dependencies. Cormorant Garamond and Jost are self-hosted in
+`assets/fonts/` (loaded via `assets/css/fonts.css`), so the site works offline.
 
 ### Notes
 

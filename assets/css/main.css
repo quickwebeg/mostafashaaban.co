@@ -2687,3 +2687,143 @@ body.menu-open .site-header.on-dark .brand__mark { filter: none; }
   .footer__brand .brand__mark { height: 30px; }
   .intro__mark { height: 46px; }
 }
+
+/* ---------- 44. Mega dropdown — category columns (reference layout) ---------- */
+.mega {
+  background: var(--paper);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 24px 48px -32px rgba(23, 21, 18, 0.22);
+}
+.mega__inner {
+  display: block;
+  grid-template-columns: none;
+  gap: 0;
+  padding-block: clamp(1.9rem, 2.6vw, 2.6rem) clamp(2rem, 2.8vw, 2.8rem);
+}
+.mega__grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: clamp(0.9rem, 1.7vw, 2.2rem);
+}
+.mega__col { min-width: 0; }
+.mega__head {
+  display: block;
+  padding-bottom: 0.85rem;
+  margin-bottom: 1.05rem;
+  border-bottom: 1px solid var(--ink);
+  font-size: 0.63rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+  transition: opacity 0.3s var(--ease);
+}
+.mega__head:hover { opacity: 0.62; }
+.mega__col ul { display: grid; gap: 0.72rem; }
+.mega__col li a {
+  display: inline-block;
+  font-size: 0.6rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.mega__col li a:hover { color: var(--ink); }
+
+@media (max-width: 1280px) {
+  .mega__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 1.6rem; }
+}
+
+/* Header turns solid white while the panel is open */
+.site-header.is-mega-open {
+  background: var(--paper);
+  color: var(--ink);
+  border-bottom-color: var(--line);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+.site-header.is-mega-open .brand__mark { filter: none; }
+.site-header.is-mega-open .btn--outline {
+  --btn-fg: var(--ink);
+  --btn-line: rgba(23, 21, 18, 0.28);
+}
+.site-header.is-mega-open .btn--outline::before { background: var(--ink); }
+.site-header.is-mega-open .btn--outline:hover { --btn-fg: var(--paper); border-color: var(--ink); }
+.site-header.is-mega-open .icon-btn:hover { background: rgba(23, 21, 18, 0.06); }
+.site-header.is-mega-open .nav__link { color: var(--ink); }
+
+/* ---------- 45. Hero-adjacent category slider ---------- */
+.cat-slider { background: var(--paper); overflow: hidden; }
+.cat-slider__track {
+  padding-inline: var(--gutter);
+  padding-block: clamp(1.1rem, 2.2vw, 2rem);
+  gap: clamp(0.8rem, 1.5vw, 1.5rem);
+  align-items: stretch;
+}
+.cat-slider__track > * { flex: 0 0 clamp(232px, 23vw, 336px); }
+.cat-card {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--paper-2);
+  isolation: isolate;
+}
+.cat-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s var(--ease), filter 0.8s var(--ease);
+  filter: saturate(0.94);
+}
+.cat-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20, 17, 13, 0.44) 0%, rgba(20, 17, 13, 0.06) 42%, rgba(20, 17, 13, 0) 62%);
+  opacity: 0.9;
+  transition: opacity 0.6s var(--ease);
+}
+.cat-card:hover img { transform: scale(1.05); filter: saturate(1); }
+.cat-card:hover::after { opacity: 1; }
+.cat-card__label {
+  position: absolute;
+  top: clamp(1rem, 1.9vw, 1.6rem);
+  left: 0;
+  right: 0;
+  z-index: 1;
+  text-align: center;
+  color: #f8f4ec;
+  font-size: 0.68rem;
+  letter-spacing: 0.28em;
+  text-indent: 0.28em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 14px rgba(20, 17, 13, 0.45);
+  pointer-events: none;
+}
+@media (max-width: 720px) {
+  .cat-card__label { font-size: 0.6rem; letter-spacing: 0.22em; text-indent: 0.22em; }
+}
+
+/* ---------- 46. Mega-open header corrections ---------- */
+.site-header.on-dark.is-mega-open .brand__mark { filter: none; }
+.site-header.on-dark.is-mega-open { color: var(--ink); }
+.mega__col li a { font-size: 0.63rem; }
+.mega__col ul { gap: 0.85rem; }
+
+/* ---------- 47. Slider gutter outside the scroll port ---------- */
+.cat-slider { padding-left: var(--gutter); }
+.cat-slider__track { padding-inline: 0; padding-right: var(--gutter); }
+
+/* ---------- 48. Draggable rows ---------- */
+.scroller { user-select: none; -webkit-user-select: none; }
+.scroller img, .scroller a { -webkit-user-drag: none; }
+.scroller.is-dragging a { cursor: grabbing; }
+
+/* ---------- 49. Slider label legibility ---------- */
+.cat-card::after {
+  background: linear-gradient(180deg, rgba(20, 17, 13, 0.55) 0%, rgba(20, 17, 13, 0.16) 44%, rgba(20, 17, 13, 0) 64%);
+}
+.cat-card__label { text-shadow: 0 1px 12px rgba(18, 15, 12, 0.55), 0 0 2px rgba(18, 15, 12, 0.4); }
