@@ -1,6 +1,6 @@
 # mostafashaaban.co
 
-A hand-built static site for **Mostafashaaban.co — Furniture Atelier**, Tanta, Egypt.
+A hand-built static site for **Mostafa Shaaban — Furniture Atelier** (mostafashaaban.co), Tanta, Egypt.
 
 ## Run locally
 

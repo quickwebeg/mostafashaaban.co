@@ -2657,3 +2657,33 @@ html { overflow-x: clip; }
   .quote__text { max-width: none; }
   .quote__by { margin-top: 0.4rem; }
 }
+
+/* ---------- 43. Brand logo (client mark) ---------- */
+.brand__mark {
+  width: auto;
+  height: 36px;
+  flex: none;
+  display: block;
+  filter: none;
+  transition: filter 0.3s var(--ease);
+}
+.site-header.on-dark:not(.is-scrolled) .brand__mark { filter: invert(1); }
+body.menu-open .site-header .brand__mark,
+body.menu-open .site-header.on-dark .brand__mark { filter: none; }
+.footer__brand .brand__mark { filter: invert(1); height: 34px; }
+
+.intro__mark {
+  width: auto;
+  height: clamp(44px, 5.4vw, 66px);
+  margin-top: clamp(0.6rem, 1.6vw, 1.4rem);
+  opacity: 0;
+  transform: scale(0.97);
+  animation: introMark 1.3s var(--ease) 0.5s forwards;
+}
+@keyframes introMark { to { opacity: 1; transform: none; } }
+
+@media (max-width: 720px) {
+  .brand__mark { height: 30px; }
+  .footer__brand .brand__mark { height: 30px; }
+  .intro__mark { height: 46px; }
+}
