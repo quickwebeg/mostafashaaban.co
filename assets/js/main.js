@@ -511,6 +511,18 @@
       product: p,
     });
   });
+  (window.SITE.catalogue || []).forEach((group) => {
+    group.items.forEach((name) => {
+      searchIndex.push({
+        kind: "Piece",
+        title: name,
+        meta: group.cat + " · made to order",
+        icon: "grid",
+        url: "products.html",
+        haystack: (name + " " + group.cat).toLowerCase(),
+      });
+    });
+  });
   (window.SITE.styles || []).forEach((s) => {
     searchIndex.push({
       kind: "Collection",
@@ -571,190 +583,117 @@
     return text.replace(new RegExp("(" + tokens.join("|") + ")", "ig"), "<mark>$1</mark>");
   }
 
-  const searchEl = document.createElement("div");
-  searchEl.className = "search";
-  searchEl.id = "site-search";
-  searchEl.setAttribute("role", "dialog");
-  searchEl.setAttribute("aria-modal", "true");
-  searchEl.setAttribute("aria-label", "Search the atelier");
-  searchEl.innerHTML =
-    '<div class="search__head">' +
-    '<div class="search__top">' +
-    '<span class="search__label">Search the atelier</span>' +
-    '<button class="search__close" data-search-close>' + ICON.close + "Close <span class='search__kbd'>esc</span></button>" +
-    "</div>" +
-    '<div class="search__field">' +
-    ICON.search +
-    '<input type="search" id="search-input" placeholder="Try “walnut”, “boho”, “sofa”…" autocomplete="off" aria-controls="search-results" aria-autocomplete="list">' +
-    "</div></div>" +
-    '<div class="search__body"><div class="search__inner">' +
-    '<div class="search__group" data-search-default>' +
-    '<h4>Popular</h4><div class="search__chips">' +
-    ["walnut", "bouclé sofa", "boho", "marble", "classic", "leather"]
-      .map((t) => '<button class="search__chip" data-search-term="' + t + '">' + t + "</button>")
-      .join("") +
-    "</div></div>" +
-    '<div class="search__group" data-search-recent hidden><h4>Recent</h4><div class="search__chips" data-recent-chips></div></div>' +
-    '<div id="search-results" class="search__group" hidden><h4 data-results-label>Results</h4><div class="search__results" data-results></div></div>' +
-    "</div></div>";
-  document.body.appendChild(searchEl);
+  const pill = $("[data-search-pill]");
+  if (pill) {
+    const input = $(".header__search__input", pill);
+    const pop = $("[data-search-pop]", pill);
+    const compact = window.matchMedia("(max-width: 1024px)");
+    let activeIndex = -1;
 
-  const searchInput = $("#search-input", searchEl);
-  const resultsWrap = $("[data-results]", searchEl);
-  const resultsGroup = $("#search-results", searchEl);
-  const resultsLabel = $("[data-results-label]", searchEl);
-  const defaultGroup = $("[data-search-default]", searchEl);
-  const recentGroup = $("[data-search-recent]", searchEl);
-  let activeIndex = -1;
+    const hidePop = () => {
+      if (pop) pop.hidden = true;
+      activeIndex = -1;
+      if (input) input.setAttribute("aria-expanded", "false");
+    };
 
-  function openSearch() {
-    searchEl.classList.add("is-open");
-    body.classList.add("is-locked");
-    renderRecent();
-    setTimeout(() => searchInput.focus(), 180);
-    if (searchInput.value) runSearch(searchInput.value);
-  }
-  function closeSearch() {
-    searchEl.classList.remove("is-open");
-    body.classList.remove("is-locked");
-    activeIndex = -1;
-  }
-
-  function renderRecent() {
-    let recent = [];
-    try {
-      recent = JSON.parse(localStorage.getItem("ms-recent") || "[]");
-    } catch (e) {}
-    if (!recent.length) {
-      recentGroup.hidden = true;
-      return;
+    function resultRow(item, query) {
+      const thumb = item.image
+        ? '<span class="sp-result__thumb"><img src="' + item.image + '" alt="" loading="lazy"></span>'
+        : '<span class="sp-result__thumb sp-result__thumb--icon">' + (ICON[item.icon] || ICON.grid) + "</span>";
+      return (
+        '<a class="sp-result" href="' + item.url + '">' +
+        thumb +
+        '<span class="sp-result__text">' +
+        '<span class="sp-result__name">' + highlight(item.title, query) + "</span>" +
+        '<span class="sp-result__meta">' + item.kind + " · " + item.meta + "</span>" +
+        "</span>" +
+        (item.price ? '<span class="sp-result__price">' + item.price + "</span>" : "") +
+        "</a>"
+      );
     }
-    recentGroup.hidden = false;
-    $("[data-recent-chips]", searchEl).innerHTML = recent
-      .map((t) => '<button class="search__chip" data-search-term="' + t + '">' + t + "</button>")
-      .join("");
-  }
 
-  function pushRecent(term) {
-    if (!term.trim()) return;
-    let recent = [];
-    try {
-      recent = JSON.parse(localStorage.getItem("ms-recent") || "[]");
-    } catch (e) {}
-    recent = [term.trim()].concat(recent.filter((r) => r !== term.trim())).slice(0, 4);
-    localStorage.setItem("ms-recent", JSON.stringify(recent));
-  }
-
-  function resultMarkup(item, query) {
-    const thumb = item.image
-      ? '<span class="s-result__thumb"><img src="' + item.image + '" alt="" loading="lazy"></span>'
-      : '<span class="s-result__thumb s-result__thumb--icon">' + (ICON[item.icon] || ICON.grid) + "</span>";
-    return (
-      '<a class="s-result" href="' + item.url + '" data-result>' +
-      thumb +
-      '<span class="s-result__main">' +
-      '<span class="s-result__name">' + highlight(item.title, query) + "</span>" +
-      '<span class="s-result__meta">' + item.kind + " · " + item.meta + "</span>" +
-      "</span>" +
-      (item.price ? '<span class="s-result__price">' + item.price + "</span>" : "") +
-      ICON.arrowUpRight.replace("<svg", '<svg class="s-result__go"') +
-      "</a>"
-    );
-  }
-
-  function runSearch(value) {
-    const query = value.trim();
-    activeIndex = -1;
-    if (!query) {
-      resultsGroup.hidden = true;
-      defaultGroup.hidden = false;
-      renderRecent();
-      return;
+    function run(value) {
+      if (!pop) return;
+      const query = value.trim();
+      if (!query) { hidePop(); return; }
+      const results = searchEngine(query).slice(0, 5);
+      pop.innerHTML = results.length
+        ? results.map((r) => resultRow(r, query)).join("") +
+          '<a class="sp-all" href="products.html?q=' + encodeURIComponent(query) + '">See all results' + ICON.arrow + "</a>"
+        : '<p class="sp-empty">Nothing under “' + query + '” yet. <a href="contact.html">Tell us what you have in mind</a>.</p>';
+      pop.hidden = false;
+      input.setAttribute("aria-expanded", "true");
+      activeIndex = -1;
     }
-    defaultGroup.hidden = true;
-    recentGroup.hidden = true;
-    const results = searchEngine(query);
-    resultsGroup.hidden = false;
-    resultsLabel.textContent = results.length
-      ? results.length + (results.length === 1 ? " result" : " results") + " for “" + query + "”"
-      : "No results for “" + query + "”";
-    if (!results.length) {
-      resultsWrap.innerHTML =
-        '<div class="search__empty"><h3>Nothing under that name — yet.</h3>' +
-        "<p>Try a material, a style, or tell us what you have in mind and we will make it.</p>" +
-        '<div class="search__chips">' +
-        ["classic", "modern", "contemporary", "boho", "rustic", "industrial"]
-          .map((t) => '<button class="search__chip" data-search-term="' + t + '">' + t + "</button>")
-          .join("") +
-        "</div></div>";
-      return;
-    }
-    resultsWrap.innerHTML = results.map((r) => resultMarkup(r, query)).join("");
+
+    input.addEventListener("input", () => run(input.value));
+    input.addEventListener("focus", () => {
+      if (input.value.trim()) run(input.value);
+    });
+    input.addEventListener("keydown", (e) => {
+      const items = $$(".sp-result", pop);
+      if (e.key === "Escape") {
+        hidePop();
+        input.blur();
+        return;
+      }
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        if (!items.length) return;
+        e.preventDefault();
+        activeIndex =
+          e.key === "ArrowDown"
+            ? (activeIndex + 1) % items.length
+            : (activeIndex - 1 + items.length) % items.length;
+        items.forEach((it, i) => it.classList.toggle("is-active", i === activeIndex));
+        return;
+      }
+      if (e.key === "Enter") {
+        const query = input.value.trim();
+        if (activeIndex > -1 && items[activeIndex]) {
+          e.preventDefault();
+          window.location.href = items[activeIndex].getAttribute("href");
+        } else if (query) {
+          e.preventDefault();
+          window.location.href = "products.html?q=" + encodeURIComponent(query);
+        }
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!pill.contains(e.target)) hidePop();
+    });
+    pill.addEventListener("click", () => {
+      if (compact.matches) window.location.href = "products.html#search";
+    });
+    document.addEventListener("keydown", (e) => {
+      const typing = e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName);
+      if ((e.key === "k" || e.key === "K") && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        if (compact.matches) {
+          window.location.href = "products.html#search";
+          return;
+        }
+        input.focus();
+        input.select();
+        return;
+      }
+      if (e.key === "/" && !typing) {
+        e.preventDefault();
+        input.focus();
+      }
+    });
   }
 
-  searchEl.addEventListener("input", (e) => {
-    if (e.target === searchInput) runSearch(searchInput.value);
-  });
-  searchEl.addEventListener("click", (e) => {
-    const chip = e.target.closest("[data-search-term]");
-    if (chip) {
-      searchInput.value = chip.dataset.searchTerm;
-      runSearch(searchInput.value);
-      searchInput.focus();
+  /* search deep link: products.html#search focuses the collection field */
+  if (location.hash === "#search") {
+    const catalogSearch = $("#catalog-search");
+    if (catalogSearch) {
+      setTimeout(() => {
+        catalogSearch.focus();
+        catalogSearch.scrollIntoView({ block: "center", behavior: "smooth" });
+      }, 400);
     }
-    if (e.target.closest("[data-search-close]")) closeSearch();
-    if (e.target.closest("[data-result]")) {
-      pushRecent(searchInput.value);
-    }
-  });
-  searchEl.addEventListener("submit", (e) => e.preventDefault());
-
-  $$("[data-search-open]").forEach((btn) =>
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      openSearch();
-    })
-  );
-
-  document.addEventListener("keydown", (e) => {
-    const isOpen = searchEl.classList.contains("is-open");
-    const target = e.target;
-    const typing = target && /INPUT|TEXTAREA|SELECT/.test(target.tagName);
-    if ((e.key === "k" || e.key === "K") && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault();
-      isOpen ? closeSearch() : openSearch();
-      return;
-    }
-    if (e.key === "/" && !typing && !isOpen) {
-      e.preventDefault();
-      openSearch();
-      return;
-    }
-    if (!isOpen) return;
-    if (e.key === "Escape") {
-      closeSearch();
-      return;
-    }
-    const items = $$(".s-result", searchEl);
-    if (!items.length) return;
-    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-      e.preventDefault();
-      activeIndex =
-        e.key === "ArrowDown"
-          ? (activeIndex + 1) % items.length
-          : (activeIndex - 1 + items.length) % items.length;
-      items.forEach((it, i) => it.classList.toggle("is-active", i === activeIndex));
-      items[activeIndex].scrollIntoView({ block: "nearest" });
-    }
-    if (e.key === "Enter" && activeIndex > -1) {
-      e.preventDefault();
-      pushRecent(searchInput.value);
-      window.location.href = items[activeIndex].getAttribute("href");
-    } else if (e.key === "Enter" && items.length === 1) {
-      pushRecent(searchInput.value);
-      window.location.href = items[0].getAttribute("href");
-    }
-  });
+  }
 
   /* -------------------------------------------------------- Quick view modal */
   const modalRoot = $("#quick-view");
@@ -840,41 +779,6 @@
       message.value = "Hello, I would like to enquire about the " + piece + ".";
     }
     if (subject && !subject.value) subject.value = "A specific piece";
-  }
-
-  /* -------------------------------------------------------------- Cursor */
-  if (fine && !reduced) {
-    const ring = document.createElement("div");
-    const dot = document.createElement("div");
-    ring.className = "cursor";
-    dot.className = "cursor-dot";
-    document.body.append(ring, dot);
-    let mx = 0, my = 0, rx = 0, ry = 0, seen = false;
-    window.addEventListener("mousemove", (e) => {
-      mx = e.clientX;
-      my = e.clientY;
-      if (!seen) {
-        seen = true;
-        ring.classList.add("is-visible");
-        dot.classList.add("is-visible");
-      }
-      dot.style.transform = "translate3d(" + (mx - 2) + "px," + (my - 2) + "px,0)";
-    });
-    const loop = () => {
-      rx += (mx - rx) * 0.18;
-      ry += (my - ry) * 0.18;
-      ring.style.transform = "translate3d(" + (rx - 17) + "px," + (ry - 17) + "px,0)";
-      requestAnimationFrame(loop);
-    };
-    loop();
-    document.addEventListener("mouseover", (e) => {
-      const hit = e.target.closest("a, button, .product-card, .style-card, .gallery-card, input, select, textarea, .scroller");
-      ring.classList.toggle("is-hover", !!hit);
-    });
-    document.addEventListener("mouseleave", () => {
-      ring.classList.remove("is-visible");
-      dot.classList.remove("is-visible");
-    });
   }
 
   /* ------------------------------------------------------- Page transitions */

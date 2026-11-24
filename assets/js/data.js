@@ -336,5 +336,17 @@
     },
   ];
 
-  window.SITE = { styles, products, gallery, pages, testimonials };
+  /* Category menu shown in the Products dropdown — names are the atelier's
+     planned pieces, searchable and linked to the collection for now. */
+  const catalogue = [
+    { cat: "Chairs", items: ["VELORA", "CORVEN", "ELORA", "AVENOR", "MAROVA", "ORVANO", "MADERO", "MOREVA"] },
+    { cat: "Sofas", items: ["BRAM", "REBA", "MERA", "KOVA", "LOIRE", "LENO", "BLOCE"] },
+    { cat: "Coffee tables", items: ["OCTARO", "OVARO", "MAVRO", "OFFSET", "KURO", "ECLIPSE", "CASCADE"] },
+    { cat: "Dining tables", items: ["DORIAN", "CORBEL", "ROVE", "DOWEL", "HALDEN"] },
+    { cat: "Consoles", items: ["VERTUS", "KAEL", "ELBA", "VANE"] },
+    { cat: "Nightstands", items: ["VESPER", "SOREN", "NOLAN", "TARO", "ORION", "TOVA", "AIDER", "RHEA"] },
+    { cat: "Beds", items: ["AUREN", "ORVESSA"] },
+  ];
+
+  window.SITE = { styles, products, gallery, pages, testimonials, catalogue };
 })();
